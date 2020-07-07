@@ -1,13 +1,15 @@
 import React from 'react';
+import { fetchCoords } from '../redux/actions';
+import { connect } from 'react-redux';
 
 class Map extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            isFetching: true,
-            locations: null,
-            polygonCoords: null
-        };
+        // this.state = {
+        //     isFetching: true,
+        //     locations: null,
+        //     polygonCoords: null
+        // };
     }
 
 loadMapScript = () => {
@@ -16,8 +18,8 @@ loadMapScript = () => {
         center: {lat: 53.904303, lng: 27.543319},
         zoom: 5,
         mapTypeId: 'roadmap',
-    });
-    const locations = [...this.state.locations];  
+    });  
+    const locations = this.props.locations;
     const mapLatLngBounds = new window.google.maps.LatLngBounds(); 
     const markerIco = {
         url: "https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678085-house-512.png",
@@ -40,7 +42,7 @@ loadMapScript = () => {
     map.setCenter(mapLatLngBounds.getCenter());
     map.fitBounds(mapLatLngBounds);
     const polygon = new window.google.maps.Polygon({
-        paths: this.state.polygonCoords,
+        paths: this.props.polygonCoords,
         strokeColor: "#FF0000",
         strokeOpacity: 0.8,
         strokeWeight: 3,
@@ -50,25 +52,8 @@ loadMapScript = () => {
     polygon.setMap(map);
 };
 
-getCoords = async () => {
-    fetch(`http://localhost:5000/`)
-    .then(response => response.json())
-    .then(coords => {
-        this.setState(
-            {
-                locations: coords.locations, 
-                polygonCoords: coords.polygonCoords, 
-                isFetching: false 
-            }
-        )
-    })
-    .catch(e => {
-        console.log(e);
-    });
-};
-
 componentDidMount() {
-    this.getCoords()
+    this.props.fetchCoords()
     const script = document.createElement('script');
     const API_KEY = 'AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo';
     script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}`;
@@ -87,4 +72,15 @@ componentDidMount() {
   }
 }
 
-export default Map;
+const mapStateToProps = state => {
+    return {
+        locations: state.locations,
+        polygonCoords: state.polygonCoords
+    }
+}
+
+const mapDispatchToProps = {
+    fetchCoords
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);

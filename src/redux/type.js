@@ -1,0 +1,2 @@
+export const REQUEST_COORDS = 'REQUEST_COORDS'
+export const FETCH_COORDS = 'FETCH_COORDS'
