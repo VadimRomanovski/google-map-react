@@ -7,7 +7,7 @@ export const fetchCoords = () => {
 }
 
 export const showPolygon = () => {
-    return dispatch => {
+    return {
         type: SHOW_POLYGON
     }
 }
