@@ -49,7 +49,12 @@ loadMapScript = () => {
         fillColor: "#FF0000",
         fillOpacity: 0.35
     });
-    polygon.setMap(map);
+    if(this.props.polygon){
+        polygon.setMap(map);
+    }else{
+        polygon.setMap();
+    }
+    
 };
 
 componentDidMount() {
@@ -73,9 +78,11 @@ componentDidMount() {
 }
 
 const mapStateToProps = state => {
+    console.log(state.map.polygon)
     return {
-        locations: state.locations,
-        polygonCoords: state.polygonCoords
+        locations: state.coords.locations,
+        polygonCoords: state.coords.polygonCoords,
+        polygon: state.map.polygon
     }
 }
 
