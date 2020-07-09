@@ -1,16 +1,18 @@
-import { FETCH_COORDS, REQUEST_COORDS} from './type';
-import { takeEvery, put, call } from 'redux-saga/effects';
+import { FETCHED_COORDS, REQUEST_COORDS} from './type';
+import { takeEvery, put, call, all } from 'redux-saga/effects';
 
-export function* sagaWatcher() {
-    yield takeEvery(REQUEST_COORDS, sagaWorker);
+function* requestCoordsWatcher() {
+    yield takeEvery(REQUEST_COORDS, requestCoords);
 }
 
-function* sagaWorker() {
-    const payload = yield call(fetchCoords)
-    yield put({ type: FETCH_COORDS, payload })
+function* requestCoords({ payload }) {
+    const response = yield call(() => {
+        return fetch(`http://localhost:5000/fetchCoords?polygon=${payload}`).then(res => res.json())
+    })
+    console.log(response)
+    yield put({ type: FETCHED_COORDS, response })
 }
 
-async function fetchCoords() {
-    const response = await fetch(`http://localhost:5000/`)
-    return await response.json()
+export default function* rootSagas() {
+    yield all([requestCoordsWatcher()]);
 }

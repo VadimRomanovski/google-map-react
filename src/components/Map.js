@@ -1,15 +1,13 @@
 import React from 'react';
-import { fetchCoords } from '../redux/actions';
+import { requestCoords } from '../redux/actions';
 import { connect } from 'react-redux';
 
 class Map extends React.Component {
     constructor(props) {
         super(props);
-        // this.state = {
-        //     isFetching: true,
-        //     locations: null,
-        //     polygonCoords: null
-        // };
+        this.state = {
+            polygonActive: false
+        };
     }
 
 loadMapScript = () => {
@@ -41,24 +39,33 @@ loadMapScript = () => {
     });
     map.setCenter(mapLatLngBounds.getCenter());
     map.fitBounds(mapLatLngBounds);
-    const polygon = new window.google.maps.Polygon({
-        paths: this.props.polygonCoords,
-        strokeColor: "#FF0000",
-        strokeOpacity: 0.8,
-        strokeWeight: 3,
-        fillColor: "#FF0000",
-        fillOpacity: 0.35
-    });
-    if(this.props.polygon){
+    if(this.props.polygonCoords){
+        const polygon = new window.google.maps.Polygon({
+            paths: this.props.polygonCoords,
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 3,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35
+        });
         polygon.setMap(map);
-    }else{
-        polygon.setMap();
-    }
+    };
+};
+
+updatePolygon = () => {
+    this.setState(function(state) {
+        return {
+            polygonActive: !state.polygonActive
+        }
+    }, ()=>{
+        this.props.requestCoords(this.state.polygonActive)
+        this.loadMapScript()
+    })
     
 };
 
 componentDidMount() {
-    this.props.fetchCoords()
+    this.props.requestCoords(this.state.polygonActive);
     const script = document.createElement('script');
     const API_KEY = 'AIzaSyAyesbQMyKVVbBgKVi2g6VX7mop2z96jBo';
     script.src = `https://maps.googleapis.com/maps/api/js?key=${API_KEY}`;
@@ -70,24 +77,32 @@ componentDidMount() {
     document.body.appendChild(script);
 };
 
-  render() {
+render() {
     return (
-        <div id={this.props.id}/>
+        <div className="mapWrap">
+            <div id={this.props.id}/>
+            <div className="controll">
+                <button>
+                    Remove polygon
+                </button>
+                <button onClick={() => {this.updatePolygon()}}>
+                    Show polygon
+                </button>
+            </div>
+        </div>
     );
   }
 }
 
 const mapStateToProps = state => {
-    console.log(state.map.polygon)
     return {
         locations: state.coords.locations,
-        polygonCoords: state.coords.polygonCoords,
-        polygon: state.map.polygon
+        polygonCoords: state.coords.polygonCoords
     }
 }
 
 const mapDispatchToProps = {
-    fetchCoords
+    requestCoords
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Map);

@@ -1,8 +1,9 @@
 import { REQUEST_COORDS, SHOW_POLYGON, HIDE_POLYGON } from './type'
 
-export const fetchCoords = () => {
+export const requestCoords = (isActive) => {
     return {
-        type: REQUEST_COORDS
+        type: REQUEST_COORDS,
+        payload: isActive
     }
 }
 

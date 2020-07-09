@@ -1,6 +1,7 @@
 const fs = require('fs');
 const data = fs.readFileSync('./data/data.json', 'utf8');
-// const words=JSON.parse(data);
+const locationsData = fs.readFileSync('./data/coordsData.json', 'utf8');
+// const json = JSON.parse(data)
 const cors = require('cors')
 const bodyparser = require('body-parser');
 const express = require('express');
@@ -18,8 +19,18 @@ app.use(express.static('website'));
 app.use(bodyparser.urlencoded({extended:false}));
 app.use(bodyparser.json());
 
-app.get('/',sendAll);
+// app.get('/',sendAll);
  
-function sendAll(request,response){
-    response.send(data);
-};
+// function sendAll(req, res){
+//     res.send(data);
+// };
+
+app.get('/fetchCoords', sendCoords);
+
+function sendCoords(req, res){
+    if(req.query.polygon === "true"){
+        res.send(data);
+    }
+    // const locationsCoords = JSON.stringify(json.locations);
+    res.send(locationsData);
+}
