@@ -82,11 +82,8 @@ render() {
         <div className="mapWrap">
             <div id={this.props.id}/>
             <div className="controll">
-                <button>
-                    Remove polygon
-                </button>
                 <button onClick={() => {this.updatePolygon()}}>
-                    Show polygon
+                    Polygon
                 </button>
             </div>
         </div>
